@@ -1,6 +1,6 @@
 ﻿#pragma strict
 
-var movementSpeed : float = 3.0f;
+var movementSpeed : float = 5.0f;
 var rotationSpeed : float = 3.0f;
 
 function Start () {
@@ -9,9 +9,10 @@ function Start () {
 function Update () {
   if (Input.GetMouseButton(1)) {
     rotate();
-  } else {
-    move();
   }
+  
+  move();
+
 
   if (Input.GetMouseButtonDown(0)) {
     grabObject();

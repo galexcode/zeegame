@@ -29,6 +29,8 @@ function moveObject() {
   if (Physics.Raycast(ray, hit)) {
     if (hit.collider != null) {
       hit.point -= ray.direction;
+      hit.point.x = Mathf.Round(hit.point.x);
+      hit.point.z = Mathf.Round(hit.point.z);
       transform.position = hit.point;
       Debug.Log(hit.point);
     }
