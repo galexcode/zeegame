@@ -36,7 +36,7 @@ function moveObject() {
 }
 
 function grab() {
-  Debug.Log("Grabbed");
   grabbed = true;
   collider.enabled = false;
+  rigidbody.velocity = Vector3(0.0, 0.0, 0.0);
 }
