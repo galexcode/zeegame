@@ -12,11 +12,6 @@ function Update () {
   }
   
   move();
-
-
-  if (Input.GetMouseButtonDown(0)) {
-    grabObject();
-  }
 }
 
 function rotate() {
@@ -41,15 +36,4 @@ function move() {
     velocity.z += 1.0;
   }
   transform.Translate(velocity * movementSpeed * Time.deltaTime, Space.World);
-}
-
-
-function grabObject() {
-  var hit: RaycastHit;
-  var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-  if (Physics.Raycast(ray, hit)) {
-    if (hit.collider != null && hit.collider.gameObject.tag == "Movable") {
-      hit.collider.gameObject.SendMessage("grab");
-    }
-  }
 }
