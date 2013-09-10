@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="C:\Users\mgarrick\AppData\Local\Temp\Temp1_tilemap_1 (1).zip\TileMap Tutorial #1\Assets\TileMapMouse.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\TilePlaneMouse.js">
     <Files>
-      <File FileName="C:\Users\mgarrick\AppData\Local\Temp\Temp1_tilemap_1.zip\TileMap Tutorial #1\Assets\TileMap.cs" Line="1" Column="9" />
-      <File FileName="C:\Users\mgarrick\AppData\Local\Temp\Temp1_tilemap_1 (1).zip\TileMap Tutorial #1\Assets\TileMapMouse.cs" Line="1" Column="1" />
+      <File FileName="C:\Users\mgarrick\AppData\Local\Temp\Temp1_tilemap_1 (2).zip\TileMap Tutorial #1\Assets\TileMapMouse.cs" Line="1" Column="1" />
+      <File FileName="C:\Users\mgarrick\AppData\Local\Temp\Temp1_tilemap_1 (2).zip\TileMap Tutorial #1\Assets\TileMap.cs" Line="21" Column="27" />
+      <File FileName="Assets\Scripts\TilePlaneMouse.js" Line="21" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
