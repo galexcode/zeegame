@@ -28,7 +28,11 @@ function Update () {
                 moving = true;
                 movingObject = hitObject;
                 movingObject.SendMessage("Grab");
-            }
+            } else {
+				var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				cube.AddComponent(Rigidbody);
+				cube.transform.position = GetSnappedCoordinates(hit.point) + Vector3(0.5, 1.0, 0.5);
+			}
         } else {
             if (hitObject.tag == "Movable") {
                 if (highlightedObject != null) {
@@ -48,5 +52,6 @@ function GetSnappedCoordinates(point : Vector3) : Vector3 {
 
     tileCoordinate.x = Mathf.FloorToInt(point.x / _tilePlane.tileSize);
     tileCoordinate.z = Mathf.FloorToInt(point.z / _tilePlane.tileSize);
+	tileCoordinate.y = point.y;
     return tileCoordinate * _tilePlane.tileSize;
 }
