@@ -4,6 +4,7 @@
 
 var currentTileCoordinate : Vector3;
 var selectionCube : Transform;
+var straightWall : Transform;
 private var _tilePlane : TilePlane;
 private var highlightedObject : GameObject;
 private var movingObject : GameObject;
@@ -19,6 +20,10 @@ function Update () {
         movingObject.SendMessage("UnGrab");
     }
 
+	// TODO: rotate the wall by 90 degrees
+	if (Input.GetMouseButtonDown(1)) {
+	}
+
     var hit: RaycastHit;
     var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
     if (Physics.Raycast(ray, hit)) {
@@ -29,9 +34,7 @@ function Update () {
                 movingObject = hitObject;
                 movingObject.SendMessage("Grab");
             } else {
-				var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-				cube.AddComponent(Rigidbody);
-				cube.transform.position = GetSnappedCoordinates(hit.point) + Vector3(0.5, 1.0, 0.5);
+				Instantiate(straightWall, GetSnappedCoordinates(hit.point), Quaternion.identity);
 			}
         } else {
             if (hitObject.tag == "Movable") {
