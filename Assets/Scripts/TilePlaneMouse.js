@@ -6,34 +6,47 @@ var currentTileCoordinate : Vector3;
 var selectionCube : Transform;
 private var _tilePlane : TilePlane;
 private var highlightedObject : GameObject;
+private var movingObject : GameObject;
+private var moving : boolean = false;
 
 function Start() {
-  _tilePlane = GetComponent(TilePlane);
+    _tilePlane = GetComponent(TilePlane);
 }
 
 function Update () {
-  highlight();
-}
-
-function highlight() {
-  var hit: RaycastHit;
-  var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-  if (Physics.Raycast(ray, hit)) {
-    if (hit.collider.gameObject.tag == "Movable") {
-      if (highlightedObject != null) {
-        highlightedObject.SendMessage("UnHighlight");
-      }
-      highlightedObject = hit.collider.gameObject;
-      highlightedObject.SendMessage("Highlight");
-    } else {
-      currentTileCoordinate.x = Mathf.FloorToInt(hit.point.x / _tilePlane.tileSize);
-      currentTileCoordinate.z = Mathf.FloorToInt(hit.point.z / _tilePlane.tileSize);
-
-      selectionCube.transform.position = currentTileCoordinate;
+    if (Input.GetMouseButtonUp(0) && moving) {
+        moving = false;
+        movingObject.SendMessage("UnGrab");
     }
 
-    //if (hit.collider != null && hit.collider.gameObject.tag == "Movable") {
-    //  hit.collider.gameObject.SendMessage("grab");
-    //}
-  }
+    var hit: RaycastHit;
+    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    if (Physics.Raycast(ray, hit)) {
+        var hitObject : GameObject = hit.collider.gameObject;
+        if (Input.GetMouseButtonDown(0)) {
+            if (hitObject.tag == "Movable") {
+                moving = true;
+                movingObject = hitObject;
+                movingObject.SendMessage("Grab");
+            }
+        } else {
+            if (hitObject.tag == "Movable") {
+                if (highlightedObject != null) {
+                    highlightedObject.SendMessage("UnHighlight");
+                }
+                highlightedObject = hitObject;
+                highlightedObject.SendMessage("Highlight");
+            } else {
+                selectionCube.transform.position = GetSnappedCoordinates(hit.point);
+            }
+        }
+    }
+}
+
+function GetSnappedCoordinates(point : Vector3) : Vector3 {
+    var tileCoordinate : Vector3;
+
+    tileCoordinate.x = Mathf.FloorToInt(point.x / _tilePlane.tileSize);
+    tileCoordinate.z = Mathf.FloorToInt(point.z / _tilePlane.tileSize);
+    return tileCoordinate * _tilePlane.tileSize;
 }
