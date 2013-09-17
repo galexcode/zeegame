@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraBehavior.js" />
+     <Compile Include="Assets\Scripts\GameManager.js" />
+     <Compile Include="Assets\Scripts\Gui.js" />
      <Compile Include="Assets\Scripts\Moveable.js" />
      <Compile Include="Assets\Scripts\Tile.js" />
      <Compile Include="Assets\Scripts\TilePlane.js" />

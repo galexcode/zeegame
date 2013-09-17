@@ -4,7 +4,8 @@
 
 var currentTileCoordinate : Vector3;
 var selectionCube : Transform;
-var straightWall : Transform;
+var cursor : Transform;
+
 private var _tilePlane : TilePlane;
 private var highlightedObject : GameObject;
 private var movingObject : GameObject;
@@ -22,8 +23,8 @@ function Update () {
     }
 
 	// TODO: rotate the wall by 90 degrees
-	//if (Input.GetMouseButtonDown(1)) {
-	//}
+	if (Input.GetMouseButtonDown(1)) {
+	}
 
     var hit: RaycastHit;
     var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -32,8 +33,8 @@ function Update () {
         
         if (Input.GetMouseButtonDown(0)) {
         	if (_tilePlane.IsEmpty(hit.point)) {
-				Debug.Log("Adding object" + straightWall.name);
-				_tilePlane.TileAt(hit.point).Add(straightWall);
+				Debug.Log("Adding object" + cursor.name);
+				_tilePlane.TileAt(hit.point).Add(cursor);
         	}
 	        /*
             if (hitObject.tag == "Movable") {
