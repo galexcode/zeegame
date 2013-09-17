@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Moveable.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\TilePlaneMouse.js">
     <Files>
-      <File FileName="Assets\Scripts\Moveable.js" Line="42" Column="20" />
-      <File FileName="Assets\Scripts\TilePlaneMouse.js" Line="19" Column="1" />
+      <File FileName="Assets\Scripts\Tile.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\TilePlaneMouse.js" Line="63" Column="1" />
+      <File FileName="Assets\Scripts\TilePlane.js" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

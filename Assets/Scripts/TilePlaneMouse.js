@@ -12,6 +12,7 @@ private var moving : boolean = false;
 
 function Start() {
     _tilePlane = GetComponent(TilePlane);
+    //selectionCube.FindChild("model").collider.enabled = false;
 }
 
 function Update () {
@@ -21,14 +22,20 @@ function Update () {
     }
 
 	// TODO: rotate the wall by 90 degrees
-	if (Input.GetMouseButtonDown(1)) {
-	}
+	//if (Input.GetMouseButtonDown(1)) {
+	//}
 
     var hit: RaycastHit;
     var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
     if (Physics.Raycast(ray, hit)) {
         var hitObject : GameObject = hit.collider.gameObject;
+        
         if (Input.GetMouseButtonDown(0)) {
+        	if (_tilePlane.IsEmpty(hit.point)) {
+				Debug.Log("Adding object" + straightWall.name);
+				_tilePlane.TileAt(hit.point).Add(straightWall);
+        	}
+	        /*
             if (hitObject.tag == "Movable") {
                 moving = true;
                 movingObject = hitObject;
@@ -36,25 +43,21 @@ function Update () {
             } else {
 				Instantiate(straightWall, GetSnappedCoordinates(hit.point), Quaternion.identity);
 			}
+			*/
         } else {
             if (hitObject.tag == "Movable") {
+				//selectionCube.FindChild("model").renderer.enabled = false;
+				/*
                 if (highlightedObject != null) {
                     highlightedObject.SendMessage("UnHighlight");
                 }
                 highlightedObject = hitObject;
                 highlightedObject.SendMessage("Highlight");
+				*/
             } else {
-                selectionCube.transform.position = GetSnappedCoordinates(hit.point);
+				//selectionCube.FindChild("model").renderer.enabled = true;
+                //selectionCube.transform.position = GetSnappedCoordinates(hit.point);
             }
         }
     }
-}
-
-function GetSnappedCoordinates(point : Vector3) : Vector3 {
-    var tileCoordinate : Vector3;
-
-    tileCoordinate.x = Mathf.FloorToInt(point.x / _tilePlane.tileSize);
-    tileCoordinate.z = Mathf.FloorToInt(point.z / _tilePlane.tileSize);
-	tileCoordinate.y = point.y;
-    return tileCoordinate * _tilePlane.tileSize;
 }

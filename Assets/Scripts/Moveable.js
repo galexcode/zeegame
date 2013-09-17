@@ -51,6 +51,5 @@ function Move() {
     var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
     if (Physics.Raycast(ray, hit)) {
         transform.position = hit.point;
-        Debug.Log(hit.point);
     }
 }
