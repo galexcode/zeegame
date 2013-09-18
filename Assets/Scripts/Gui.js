@@ -7,6 +7,9 @@ private var tilePlaneMouse : TilePlaneMouse;
 
 function Awake() {
 	tilePlaneMouse = GameObject.FindWithTag("TilePlane").GetComponent(TilePlaneMouse);
+	straightWall = Instantiate(straightWall);
+
+	cornerWall = Instantiate(cornerWall);
 }
 
 function OnGUI () {

@@ -6,13 +6,13 @@ var currentTileCoordinate : Vector3;
 var selectionCube : Transform;
 var cursor : Transform;
 
-private var _tilePlane : TilePlane;
+private var tilePlane : TilePlane;
 private var highlightedObject : GameObject;
 private var movingObject : GameObject;
 private var moving : boolean = false;
 
 function Start() {
-    _tilePlane = GetComponent(TilePlane);
+    tilePlane = GetComponent(TilePlane);
     //selectionCube.FindChild("model").collider.enabled = false;
 }
 
@@ -22,8 +22,12 @@ function Update () {
         movingObject.SendMessage("UnGrab");
     }
 
-	// TODO: rotate the wall by 90 degrees
 	if (Input.GetMouseButtonDown(1)) {
+		for (var child : Transform in cursor) {
+			if (child.gameObject.name == "Model") {
+				child.Rotate(Vector3.up, 90.0);
+			}
+		}
 	}
 
     var hit: RaycastHit;
@@ -32,9 +36,9 @@ function Update () {
         var hitObject : GameObject = hit.collider.gameObject;
         
         if (Input.GetMouseButtonDown(0)) {
-        	if (_tilePlane.IsEmpty(hit.point)) {
+        	if (tilePlane.IsEmpty(hit.point)) {
 				Debug.Log("Adding object" + cursor.name);
-				_tilePlane.TileAt(hit.point).Add(cursor);
+				tilePlane.TileAt(hit.point).Add(cursor);
         	}
 	        /*
             if (hitObject.tag == "Movable") {
@@ -56,8 +60,8 @@ function Update () {
                 highlightedObject.SendMessage("Highlight");
 				*/
             } else {
+				cursor.transform.position = tilePlane.Coordinates(hit.point);
 				//selectionCube.FindChild("model").renderer.enabled = true;
-                //selectionCube.transform.position = GetSnappedCoordinates(hit.point);
             }
         }
     }

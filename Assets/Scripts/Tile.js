@@ -28,7 +28,7 @@ class Tile {
 	*/
 
 	function Add(contents : Transform) {
-		this.contents = plane.Instantiate(contents, Vector3(x, 0, z), Quaternion.identity);
+		this.contents = plane.Instantiate(contents, Vector3(x, 0, z), contents.transform.rotation);
 		full = true;
 	}
 }
