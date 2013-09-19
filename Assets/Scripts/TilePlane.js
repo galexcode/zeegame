@@ -97,3 +97,7 @@ function Coordinates(point : Vector3) : Vector3 {
 	tileCoordinate.y = point.y;
 	return tileCoordinate * tileSize;
 }
+
+function Add(origin : Vector3, contents : Transform) {
+	Instantiate(contents, origin, contents.transform.rotation);
+}

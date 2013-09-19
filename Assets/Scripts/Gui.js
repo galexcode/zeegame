@@ -2,25 +2,27 @@
 
 var straightWall : Transform;
 var cornerWall : Transform;
+var building : Transform;
 
 private var tilePlaneMouse : TilePlaneMouse;
 
 function Awake() {
 	tilePlaneMouse = GameObject.FindWithTag("TilePlane").GetComponent(TilePlaneMouse);
-	straightWall = Instantiate(straightWall);
-
-	cornerWall = Instantiate(cornerWall);
 }
 
 function OnGUI () {
 	// Make a background box
-	GUI.Box (Rect (10,10,100,90), "Object Selection");
+	GUI.Box (Rect (10,10,150,140), "Object Selection");
 
 	if (GUI.Button (Rect (20,40,80,20), "Straight Wall")) {
-		tilePlaneMouse.cursor = straightWall;
+		tilePlaneMouse.SetCursor(straightWall);
 	}
 
 	if (GUI.Button (Rect (20,70,80,20), "Corner Wall")) {
-		tilePlaneMouse.cursor = cornerWall;
+		tilePlaneMouse.SetCursor(cornerWall);
+	}
+
+	if (GUI.Button (Rect (20,100,80,20), "Building")) {
+		tilePlaneMouse.SetCursor(building);
 	}
 }

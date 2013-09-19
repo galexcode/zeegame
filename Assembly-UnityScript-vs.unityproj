@@ -48,6 +48,7 @@
      <Compile Include="Assets\Scripts\GameManager.js" />
      <Compile Include="Assets\Scripts\Gui.js" />
      <Compile Include="Assets\Scripts\Moveable.js" />
+     <Compile Include="Assets\Scripts\Resizeable.js" />
      <Compile Include="Assets\Scripts\Tile.js" />
      <Compile Include="Assets\Scripts\TilePlane.js" />
      <Compile Include="Assets\Scripts\TilePlaneMouse.js" />

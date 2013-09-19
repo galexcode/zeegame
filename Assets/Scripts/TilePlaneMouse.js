@@ -35,7 +35,7 @@ function Update () {
 	if (Physics.Raycast(ray, hit)) {
 		var hitObject : GameObject = hit.collider.gameObject;
 
-		if (tilePlane.IsEmpty(hit.point)) {
+		if (tilePlane.IsEmpty(hit.point) && cursor != null) {
 			cursor.position = tilePlane.Coordinates(hit.point);
 		}
 
@@ -45,7 +45,8 @@ function Update () {
 					Debug.Log("grabbing object" + hitObject);
 					Grab(hitObject);
 				} else {
-					Debug.Log("create building");
+					// instantiate building here
+					//tilePlane.Add(hit.point, building);
 				}
 			} else if (tilePlane.IsEmpty(hit.point)) {
 				tilePlane.TileAt(hit.point).Add(cursor);
@@ -58,4 +59,12 @@ function Grab(gameObject : GameObject) {
 	moving = true;
 	movingObject = gameObject;
 	movingObject.SendMessage("Grab");
+}
+
+function SetCursor(cursor : Transform) {
+	if (this.cursor != null) {
+		Debug.Log("destroying " + this.cursor);
+		Destroy(this.cursor.gameObject);
+	}
+	this.cursor = Instantiate(cursor);
 }
