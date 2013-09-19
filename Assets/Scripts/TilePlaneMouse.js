@@ -30,39 +30,32 @@ function Update () {
 		}
 	}
 
-    var hit: RaycastHit;
-    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    if (Physics.Raycast(ray, hit)) {
-        var hitObject : GameObject = hit.collider.gameObject;
-        
-        if (Input.GetMouseButtonDown(0)) {
-        	if (tilePlane.IsEmpty(hit.point)) {
-				Debug.Log("Adding object" + cursor.name);
+	var hit: RaycastHit;
+	var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+	if (Physics.Raycast(ray, hit)) {
+		var hitObject : GameObject = hit.collider.gameObject;
+
+		if (tilePlane.IsEmpty(hit.point)) {
+			cursor.position = tilePlane.Coordinates(hit.point);
+		}
+
+		if (Input.GetMouseButton(0)) {
+			if (Input.GetMouseButtonDown(0)) {
+				if (hitObject.tag == "Movable") {
+					Debug.Log("grabbing object" + hitObject);
+					Grab(hitObject);
+				} else {
+					Debug.Log("create building");
+				}
+			} else if (tilePlane.IsEmpty(hit.point)) {
 				tilePlane.TileAt(hit.point).Add(cursor);
-        	}
-	        /*
-            if (hitObject.tag == "Movable") {
-                moving = true;
-                movingObject = hitObject;
-                movingObject.SendMessage("Grab");
-            } else {
-				Instantiate(straightWall, GetSnappedCoordinates(hit.point), Quaternion.identity);
 			}
-			*/
-        } else {
-            if (hitObject.tag == "Movable") {
-				//selectionCube.FindChild("model").renderer.enabled = false;
-				/*
-                if (highlightedObject != null) {
-                    highlightedObject.SendMessage("UnHighlight");
-                }
-                highlightedObject = hitObject;
-                highlightedObject.SendMessage("Highlight");
-				*/
-            } else {
-				cursor.transform.position = tilePlane.Coordinates(hit.point);
-				//selectionCube.FindChild("model").renderer.enabled = true;
-            }
-        }
-    }
+		}
+	}
+}
+
+function Grab(gameObject : GameObject) {
+	moving = true;
+	movingObject = gameObject;
+	movingObject.SendMessage("Grab");
 }
