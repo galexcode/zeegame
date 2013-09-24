@@ -40,8 +40,8 @@ function Update () {
 				if (hitObject.tag == "Movable") {
 					Debug.Log("grabbing object" + hitObject);
 					Grab(hitObject);
-				} else if (tilePlane.IsEmpty(hit.point)) {
-					tilePlane.TileAt(hit.point).Create(cursor);
+				} else {
+					Instantiate(cursor, tilePlane.TileAt(hit.point).Coordinates(), cursor.transform.rotation);
 					Destroy(cursor.gameObject);
 				}
 			}

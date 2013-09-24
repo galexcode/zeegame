@@ -1,32 +1,36 @@
 ﻿import System.Collections.Generic;
 
-private var duringPlacement : boolean;
 
 private var bottomLeft : Transform;
 private var bottomRight : Transform;
 private var topRight : Transform;
 private var topLeft : Transform;
-private var top : Transform;
-private var bottom : Transform;
-private var left : Transform;
-private var right : Transform;
+private var vertical : Transform;
+private var horizontal : Transform;
 
-private var coordinates : Vector3;
+private var origin : Vector3;
+private var mouseCoordinates : Vector3;
 private var tilePlane : TilePlane;
-private var extraPieces = new List.<Transform>();
+private var pieces = new List.<Transform>();
+private var duringPlacement : boolean;
 
 function Awake() {
 	bottomLeft = transform.Find("BottomLeft");
 	bottomRight = transform.Find("BottomRight");
 	topLeft = transform.Find("TopLeft");
 	topRight = transform.Find("TopRight");
-	top = transform.Find("Top");
-	bottom = transform.Find("Bottom");
-	left = transform.Find("Left");
-	right = transform.Find("Right");
+	vertical = transform.Find("Vertical");
+	horizontal = transform.Find("Horizontal");
 	
 	duringPlacement = true;
 	tilePlane = GameObject.FindWithTag("TilePlane").GetComponent(TilePlane);
+
+	origin = transform.position;
+}
+
+function Start() {
+	// TODO: call this so that it appears
+	//Resize(origin);
 }
 
 function Update() {
@@ -36,6 +40,14 @@ function Update() {
 	}
 
 	if (Input.GetMouseButtonUp(0)) {
+		if (CanCreate()) {
+			// Tell TilePlane that the walls of this building exist
+			for (var transform : Transform in pieces) {
+				tilePlane.TileAt(transform.position).Add(transform);
+			}
+		} else {
+			DestroyAll();
+		}
 		duringPlacement = false;
 	}
 
@@ -47,45 +59,68 @@ function Update() {
 
 			if (tilePlane.IsEmpty(hit.point)) {
 				var newCoordinates = tilePlane.Coordinates(hit.point);
-				if (this.coordinates != newCoordinates) {
+				if (this.mouseCoordinates != newCoordinates) {
 					Resize(newCoordinates);
-					this.coordinates = newCoordinates;
+					this.mouseCoordinates = newCoordinates;
 				}
 			}
 		}
 	}
 }
 
-function Resize(point : Vector3) {
-	var origin = bottomLeft.transform.position;
+function CanCreate() {
+	for (var transform : Transform in pieces) {
+		if (!tilePlane.IsEmpty(transform.position)) {
+			Debug.Log("Can't create at " + transform.position + " because " + tilePlane.TileAt(transform.position).content + " is there");
+			return false;
+		}
+	}
+	return true;
+}
 
-	// Destroy cloned wall pieces
-	for (var transform : Transform in extraPieces) {
+function DestroyWalls() {
+	// Destroy cloned wall pieces from previous resize
+	for (var transform : Transform in pieces) {
 		if (transform != null) {
 			Destroy(transform.gameObject);
 		}
 	}
+	pieces = new List.<Transform>();
+}
 
-	var start = Vector3.Min(bottomLeft.transform.position, point);
-	var end = Vector3.Max(bottomLeft.transform.position, point);
+function DestroyAll() {
+	DestroyWalls();
+	Destroy(gameObject);
+}
+
+function Resize(point : Vector3) {
+	DestroyWalls();
+
+	if (origin == point) {
+		point += Vector3.one;
+	}
+	var start = Vector3.Min(origin, point);
+	var end = Vector3.Max(origin, point);
 
 	for (var x=start.x+1; x<end.x; x++) {
-		extraPieces.Add(Instantiate(top, Vector3(x, 0, point.z), top.transform.rotation));
-		extraPieces.Add(Instantiate(bottom, Vector3(x, 0, origin.z), bottom.transform.rotation));
+		pieces.Add(Instantiate(horizontal, Vector3(x, 0, point.z), horizontal.transform.rotation));
+		pieces.Add(Instantiate(horizontal, Vector3(x, 0, origin.z), horizontal.transform.rotation));
 	}
 
 	for (var z=start.z+1; z<end.z; z++) {
-		extraPieces.Add(Instantiate(right, Vector3(origin.x, 0, z), right.transform.rotation));
-		extraPieces.Add(Instantiate(left, Vector3(point.x, 0, z), left.transform.rotation));
+		pieces.Add(Instantiate(vertical, Vector3(origin.x, 0, z), vertical.transform.rotation));
+		pieces.Add(Instantiate(vertical, Vector3(point.x, 0, z), vertical.transform.rotation));
 	}
 
-	for (var transform : Transform in extraPieces) {
+	pieces.Add(Instantiate(bottomLeft, Vector3(start.x, 0, start.z), bottomLeft.transform.rotation));
+	pieces.Add(Instantiate(bottomRight, Vector3(end.x, 0, start.z), bottomRight.transform.rotation));
+	pieces.Add(Instantiate(topRight, Vector3(end.x, 0, end.z), topRight.transform.rotation));
+	pieces.Add(Instantiate(topLeft, Vector3(start.x, 0, end.z), topLeft.transform.rotation));
+
+	for (var transform : Transform in pieces) {
 		if (transform != null) {
+			transform.parent = this.transform;
 			transform.Find("Model").renderer.enabled = true;
 		}
 	}
-
-	bottomRight.transform.position = Vector3(point.x, 0, origin.z);
-	topRight.transform.position = Vector3(point.x, 0, point.z);
-	topLeft.transform.position = Vector3(origin.x, 0, point.z);
 }

@@ -27,8 +27,16 @@ class Tile {
 	return tileCoordinate * tileSize;
 	*/
 
-	function Create(content : Transform) {
-		this.content = plane.Instantiate(content, Vector3(x, 0, z), content.transform.rotation);
+	function Add(content : Transform) {
+		this.content = content;
 		full = true;
+	}
+
+	function Create(content : Transform) {
+		this.Add(plane.Instantiate(content, Coordinates(), content.transform.rotation));
+	}
+
+	function Coordinates() {
+		return Vector3(x, 0, z);
 	}
 }
