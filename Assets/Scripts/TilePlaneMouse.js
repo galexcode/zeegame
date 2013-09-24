@@ -35,23 +35,19 @@ function Update () {
 	if (Physics.Raycast(ray, hit)) {
 		var hitObject : GameObject = hit.collider.gameObject;
 
-		if (tilePlane.IsEmpty(hit.point) && cursor != null) {
-			cursor.position = tilePlane.Coordinates(hit.point);
-		}
-
 		if (Input.GetMouseButton(0)) {
 			if (Input.GetMouseButtonDown(0)) {
 				if (hitObject.tag == "Movable") {
 					Debug.Log("grabbing object" + hitObject);
 					Grab(hitObject);
-				} else {
-					// instantiate building here
-					//tilePlane.Add(hit.point, building);
+				} else if (tilePlane.IsEmpty(hit.point)) {
+					tilePlane.TileAt(hit.point).Create(cursor);
 				}
-			} else if (tilePlane.IsEmpty(hit.point)) {
-				tilePlane.TileAt(hit.point).Add(cursor);
 			}
+		} else if (tilePlane.IsEmpty(hit.point) && cursor != null) {
+			cursor.position = tilePlane.Coordinates(hit.point);
 		}
+
 	}
 }
 
@@ -63,7 +59,6 @@ function Grab(gameObject : GameObject) {
 
 function SetCursor(cursor : Transform) {
 	if (this.cursor != null) {
-		Debug.Log("destroying " + this.cursor);
 		Destroy(this.cursor.gameObject);
 	}
 	this.cursor = Instantiate(cursor);

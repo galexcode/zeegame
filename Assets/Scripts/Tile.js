@@ -5,7 +5,7 @@ class Tile {
 	var z : int;
 	var plane : TilePlane;
 
-	var contents : Transform;
+	var content : Transform;
 	var full : boolean = false;
 
 	function Tile(x : int, z : int, plane : TilePlane) {
@@ -27,8 +27,8 @@ class Tile {
 	return tileCoordinate * tileSize;
 	*/
 
-	function Add(contents : Transform) {
-		this.contents = plane.Instantiate(contents, Vector3(x, 0, z), contents.transform.rotation);
+	function Create(content : Transform) {
+		this.content = plane.Instantiate(content, Vector3(x, 0, z), content.transform.rotation);
 		full = true;
 	}
 }
