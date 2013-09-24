@@ -30,10 +30,16 @@ function Awake() {
 }
 
 function Update() {
+	// Don't allow resizing when the object is already placed.
+	if (!duringPlacement) {
+		return;
+	}
+
 	if (Input.GetMouseButtonUp(0)) {
 		duringPlacement = false;
 	}
-	if (duringPlacement && Input.GetMouseButton(0)) {
+
+	if (Input.GetMouseButton(0)) {
 		var hit: RaycastHit;
 		var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		if (Physics.Raycast(ray, hit)) {
@@ -82,5 +88,4 @@ function Resize(point : Vector3) {
 	bottomRight.transform.position = Vector3(point.x, 0, origin.z);
 	topRight.transform.position = Vector3(point.x, 0, point.z);
 	topLeft.transform.position = Vector3(origin.x, 0, point.z);
-
 }

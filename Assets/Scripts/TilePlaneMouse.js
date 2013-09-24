@@ -42,6 +42,7 @@ function Update () {
 					Grab(hitObject);
 				} else if (tilePlane.IsEmpty(hit.point)) {
 					tilePlane.TileAt(hit.point).Create(cursor);
+					Destroy(cursor.gameObject);
 				}
 			}
 		} else if (tilePlane.IsEmpty(hit.point) && cursor != null) {
