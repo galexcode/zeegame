@@ -5,6 +5,14 @@
 @script RequireComponent(MeshRenderer);
 @script RequireComponent(MeshCollider);
 
+// Wall pieces
+var bottomLeft : Transform;
+var bottomRight : Transform;
+var topRight : Transform;
+var topLeft : Transform;
+var vertical : Transform;
+var horizontal : Transform;
+
 var sizeX : int = 20;
 var sizeZ : int = 10;
 var tileSize : int = 1;

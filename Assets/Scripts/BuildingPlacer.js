@@ -1,12 +1,6 @@
 ﻿import System.Collections.Generic;
 
 
-var bottomLeft : Transform;
-var bottomRight : Transform;
-var topRight : Transform;
-var topLeft : Transform;
-var vertical : Transform;
-var horizontal : Transform;
 var pieces = new List.<Transform>();
 var start : Vector3;
 var end : Vector3;
@@ -116,21 +110,19 @@ function Resize(point : Vector3) {
 		end.z += 1;
 	}
 
-	//Debug.Log("start = " + start + ", end = " + end + ", distance = " + distance);
-
-	pieces.Add(Instantiate(bottomLeft, Vector3(start.x, 0, start.z), bottomLeft.transform.rotation));
-	pieces.Add(Instantiate(bottomRight, Vector3(end.x, 0, start.z), bottomRight.transform.rotation));
-	pieces.Add(Instantiate(topRight, Vector3(end.x, 0, end.z), topRight.transform.rotation));
-	pieces.Add(Instantiate(topLeft, Vector3(start.x, 0, end.z), topLeft.transform.rotation));
+	pieces.Add(Instantiate(tilePlane.bottomLeft, Vector3(start.x, 0, start.z), tilePlane.bottomLeft.rotation));
+	pieces.Add(Instantiate(tilePlane.bottomRight, Vector3(end.x, 0, start.z), tilePlane.bottomRight.rotation));
+	pieces.Add(Instantiate(tilePlane.topRight, Vector3(end.x, 0, end.z), tilePlane.topRight.rotation));
+	pieces.Add(Instantiate(tilePlane.topLeft, Vector3(start.x, 0, end.z), tilePlane.topLeft.rotation));
 
 	for (var x=start.x+1; x<end.x; x++) {
-		pieces.Add(Instantiate(horizontal, Vector3(x, 0, end.z), horizontal.transform.rotation));
-		pieces.Add(Instantiate(horizontal, Vector3(x, 0, start.z), horizontal.transform.rotation));
+		pieces.Add(Instantiate(tilePlane.horizontal, Vector3(x, 0, end.z), tilePlane.horizontal.rotation));
+		pieces.Add(Instantiate(tilePlane.horizontal, Vector3(x, 0, start.z), tilePlane.horizontal.rotation));
 	}
 
 	for (var z=start.z+1; z<end.z; z++) {
-		pieces.Add(Instantiate(vertical, Vector3(start.x, 0, z), vertical.transform.rotation));
-		pieces.Add(Instantiate(vertical, Vector3(end.x, 0, z), vertical.transform.rotation));
+		pieces.Add(Instantiate(tilePlane.vertical, Vector3(start.x, 0, z), tilePlane.vertical.rotation));
+		pieces.Add(Instantiate(tilePlane.vertical, Vector3(end.x, 0, z), tilePlane.vertical.rotation));
 	}
 
 	for (var transform : Transform in pieces) {

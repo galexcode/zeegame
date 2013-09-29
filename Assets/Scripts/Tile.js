@@ -148,26 +148,34 @@ class Tile {
 				content = null;
 			}
 
-			content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-			content.position = Vector3(x+0.5, 0, z+0.5);
-
+			var newTransform : Transform;
 			var isWall = function(tile : Tile) { tile.IsWall(); };
 			if (All(intersectionPattern, isWall)) {
+				content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+				content.position = Vector3(x+0.5, 0, z+0.5);
 				content.renderer.material.SetColor("_Color", Color.yellow);
 			} else if (All(horizontalPattern, isWall)) {
-				content.renderer.material.SetColor("_Color", Color.red);
+				newTransform = tilePlane.horizontal;
 			} else if (All(verticalPattern, isWall)) {
-				content.renderer.material.SetColor("_Color", Color.green);
+				newTransform = tilePlane.vertical;
 			} else if (All(bottomLeftPattern, isWall)) {
-				content.renderer.material.SetColor("_Color", Color.black);
+				newTransform = tilePlane.bottomLeft;
 			} else if (All(topLeftPattern, isWall)) {
-				content.renderer.material.SetColor("_Color", Color.black);
+				newTransform = tilePlane.topLeft;
 			} else if (All(topRightPattern, isWall)) {
-				content.renderer.material.SetColor("_Color", Color.black);
+				newTransform = tilePlane.topRight;
 			} else if (All(bottomRightPattern, isWall)) {
-				content.renderer.material.SetColor("_Color", Color.black);
+				newTransform = tilePlane.bottomRight;
 			} else {
+				content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+				content.position = Vector3(x+0.5, 0, z+0.5);
 				content.renderer.material.SetColor("_Color", Color.blue);
+			}
+
+			if (newTransform != null) {
+				content = tilePlane.Instantiate(newTransform, Position(), newTransform.rotation);
+				content.parent = tilePlane.transform;
+				content.Find("Model").renderer.enabled = true;
 			}
 		}
 	}
