@@ -1,8 +1,8 @@
 ﻿#pragma strict
 
-var straightWall : Transform;
-var cornerWall : Transform;
-var building : Transform;
+var straightWall : GameObject;
+var cornerWall : GameObject;
+var building : GameObject;
 
 private var tilePlaneMouse : TilePlaneMouse;
 

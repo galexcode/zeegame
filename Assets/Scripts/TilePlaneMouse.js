@@ -2,9 +2,8 @@
 
 @script RequireComponent(Plane);
 
-var currentTileCoordinate : Vector3;
 var selectionCube : Transform;
-var cursor : Transform;
+var cursor : GameObject;
 
 private var tilePlane : TilePlane;
 private var highlightedObject : GameObject;
@@ -22,7 +21,7 @@ function Update () {
         movingObject.SendMessage("UnGrab");
     }
 
-	if (Input.GetMouseButtonDown(1)) {
+	if (cursor != null && Input.GetMouseButtonDown(1)) {
 		for (var child : Transform in cursor) {
 			if (child.gameObject.name == "Model") {
 				child.Rotate(Vector3.up, 90.0);
@@ -40,15 +39,20 @@ function Update () {
 				if (hitObject.tag == "Movable") {
 					Debug.Log("grabbing object" + hitObject);
 					Grab(hitObject);
-				} else {
-					Instantiate(cursor, tilePlane.TileAt(hit.point).Coordinates(), cursor.transform.rotation);
-					Destroy(cursor.gameObject);
+				} else if (cursor != null) {
+					var object = Instantiate(cursor, tilePlane.TileAt(hit.point).Coordinates(), cursor.transform.rotation);
+					object.GetComponent(BuildingPlacer).StartPlacement();
+					Destroy(cursor);
 				}
 			}
-		} else if (tilePlane.IsEmpty(hit.point) && cursor != null) {
-			cursor.position = tilePlane.Coordinates(hit.point);
-		}
+		} else if (tilePlane.IsEmpty(hit.point)) {
+			var currentTileCoordinate = tilePlane.Coordinates(hit.point);
 
+			selectionCube.position = currentTileCoordinate;
+			if (cursor != null) {
+				cursor.transform.position = currentTileCoordinate;
+			}
+		}
 	}
 }
 
@@ -58,9 +62,9 @@ function Grab(gameObject : GameObject) {
 	movingObject.SendMessage("Grab");
 }
 
-function SetCursor(cursor : Transform) {
+function SetCursor(cursor : GameObject) {
 	if (this.cursor != null) {
-		Destroy(this.cursor.gameObject);
+		Destroy(this.cursor);
 	}
-	this.cursor = Instantiate(cursor);
+	this.cursor = Instantiate(cursor).gameObject;
 }

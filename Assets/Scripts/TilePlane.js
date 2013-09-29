@@ -70,23 +70,26 @@ function BuildMesh() {
 	meshCollider.sharedMesh = mesh;
 }
 
-function offset(x : int, y : int) {
-	//return y * width + x;
-	return y * (sizeX+1) + x;
+function offset(x : int, z : int) {
+	return z * (sizeX+1) + x;
 }
 
-function TileAt(point : Vector3) {
-	var tile : Tile = tiles[offset(point.x, point.z)];
+function TileAt(x : int, z : int) {
+	return TileAt(Vector3(x, 0, z));
+}
 
-	if (tile == null) {
-		Debug.Log("Could not find tile at point (" + point.x + ", " + point.z + ")");
+function TileAt(point : Vector3) : Tile {
+	var offset : int = this.offset(point.x, point.z);
+	if (offset >= tiles.length || offset < 0) {
+		//Debug.Log("Could not find tile at point (" + point.x + ", " + point.z + ")");
+		return null;
 	}
 
-	return tile;
+	return tiles[offset];
 }
 
 function IsEmpty(point : Vector3) : boolean {
-	return TileAt(point).isEmpty();
+	return TileAt(point).IsEmpty();
 }
 
 function Coordinates(point : Vector3) : Vector3 {
@@ -94,10 +97,51 @@ function Coordinates(point : Vector3) : Vector3 {
 
 	tileCoordinate.x = Mathf.FloorToInt(point.x / tileSize);
 	tileCoordinate.z = Mathf.FloorToInt(point.z / tileSize);
-	tileCoordinate.y = point.y;
+	tileCoordinate.y = 0;
 	return tileCoordinate * tileSize;
 }
 
 function Add(origin : Vector3, contents : Transform) {
 	Instantiate(contents, origin, contents.transform.rotation);
+}
+
+function TextState() {
+    var output : String = '';
+
+	for (var z=sizeZ-1; z>=0; z--) {
+		for (var x=0; x<sizeX; x++) {
+			output += TileAt(x, z).Text();
+		}
+		output += "\n";
+	}
+	return output;
+}
+
+function Add(start : Vector3, end : Vector3) {
+	//Debug.Log("start = " + start + ", end = " + end);
+
+	var rectangle = Rectangle(start, end);
+
+	// Fill in the inside
+	rectangle.ProcessInside(function(x : int, z : int) {
+			TileAt(x, z).SetInside();
+			});
+
+	// Fill in the walls on the outside
+	rectangle.ProcessEdge(function(x : int, z : int) {
+			TileAt(x, z).SetWall();
+			});
+
+	// If this wall extends into another wall, try to turn it into inside space
+	rectangle.ProcessEdge(function(x : int, z : int) {
+			TileAt(x, z).MergeInside();
+			});
+
+	// If this wall butts up against another wall, try to turn the two walls into inside space
+	Rectangle(start - Vector3.one, end + Vector3.one).ProcessEdge(function(x : int, z : int) {
+			var tile : Tile = TileAt(x, z);
+			if (tile != null) {
+			tile.MergeInside();
+			}
+			});
 }
