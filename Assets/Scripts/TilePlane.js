@@ -141,12 +141,20 @@ function Add(start : Vector3, end : Vector3) {
 	Rectangle(start - Vector3.one, end + Vector3.one).ProcessEdge(function(x : int, z : int) {
 			var tile : Tile = TileAt(x, z);
 			if (tile != null) {
-			tile.MergeInside();
+				tile.MergeInside();
 			}
 			});
 
 	// Draw the wall if needed
 	rectangle.ProcessEdge(function(x : int, z : int) {
 			TileAt(x, z).Draw();
+			});
+
+	// Adjust adjacent walls if needed
+	Rectangle(start - Vector3.one, end + Vector3.one).ProcessEdge(function(x : int, z : int) {
+			var tile : Tile = TileAt(x, z);
+			if (tile != null) {
+				tile.Draw();
+			}
 			});
 }

@@ -29,6 +29,50 @@ class Tile {
 		Vector3(-1, 0, -1)
 	];
 
+	private var intersectionPattern : Vector3[] = [
+		Vector3(0, 0, 0),
+		Vector3(-1, 0, 0),
+		Vector3(1, 0, 0),
+		Vector3(0, 0, -1),
+		Vector3(0, 0, 1)
+	];
+
+	private var horizontalPattern : Vector3[] = [
+		Vector3(-1, 0, 0),
+		Vector3(0, 0, 0),
+		Vector3(1, 0, 0)
+	];
+
+	private var verticalPattern : Vector3[] = [
+		Vector3(0, 0, -1),
+		Vector3(0, 0, 0),
+		Vector3(0, 0, 1)
+	];
+
+	private var bottomLeftPattern : Vector3[] = [
+		Vector3(0, 0, 1),
+		Vector3(0, 0, 0),
+		Vector3(1, 0, 0)
+	];
+
+	private var topLeftPattern : Vector3[] = [
+		Vector3(0, 0, -1),
+		Vector3(0, 0, 0),
+		Vector3(1, 0, 0)
+	];
+
+	private var topRightPattern : Vector3[] = [
+		Vector3(-1, 0, 0),
+		Vector3(0, 0, 0),
+		Vector3(0, 0, -1)
+	];
+
+	private var bottomRightPattern : Vector3[] = [
+		Vector3(0, 0, 1),
+		Vector3(0, 0, 0),
+		Vector3(-1, 0, 0)
+	];
+
 	function Tile(x : int, z : int, tilePlane : TilePlane) {
 		this.x = x;
 		this.z = z;
@@ -59,11 +103,15 @@ class Tile {
 		return state == 'wall';
 	}
 
+	function Position() {
+		return Vector3(x, 0, z);
+	}
+	
 	function NumAdjacent(state : String, adjacencyMatrix : Vector3[]) : int {
 		var adjacent = 0;
 
 		for (var i=0; i<adjacencyMatrix.length; i++) {
-			var tile = tilePlane.TileAt(Vector3(x, 0, z) + adjacencyMatrix[i]);
+			var tile = tilePlane.TileAt(Position() + adjacencyMatrix[i]);
 
 			if (tile != null) {
 				if (tile.state == state) {
@@ -83,10 +131,6 @@ class Tile {
 	function SetWall() {
 		// Don't create a wall inside of an existing building.
 		if (!IsInside()) {
-			if (content != null) {
-				tilePlane.Destroy(content.gameObject);
-				content = null;
-			}
 			state = 'wall';
 		}
 	}
@@ -99,23 +143,33 @@ class Tile {
 
 	function Draw() {
 		if (state == 'wall') {
+			if (content != null) {
+				tilePlane.Destroy(content.gameObject);
+				content = null;
+			}
+
 			content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
 			content.position = Vector3(x+0.5, 0, z+0.5);
-			content.renderer.material.SetColor("_Color", Color.blue);
-		}
-		/*
-		if (IsWall()) {
-			for (var i=0; i<4; i++) {
-				var tile1 = tilePlane.TileAt(Vector3(x, 0, z) + around[i]);
-				var tile2 = tilePlane.TileAt(Vector3(x, 0, z) + around[(i+1)%4]);
 
-				if (tile1 != null && tile2 != null && tile1.IsWall() && tile2.IsWall()) {
-					//tilePlane.Destroy(content.gameObject);
-					//content = tilePlane.Instantiate(GameObject.Find("BottomRight").transform);
-				}
+			var isWall = function(tile : Tile) { tile.IsWall(); };
+			if (All(intersectionPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.yellow);
+			} else if (All(horizontalPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.red);
+			} else if (All(verticalPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.green);
+			} else if (All(bottomLeftPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.black);
+			} else if (All(topLeftPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.black);
+			} else if (All(topRightPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.black);
+			} else if (All(bottomRightPattern, isWall)) {
+				content.renderer.material.SetColor("_Color", Color.black);
+			} else {
+				content.renderer.material.SetColor("_Color", Color.blue);
 			}
 		}
-		*/
 	}
 
 	function Add(content : Transform) {
@@ -145,5 +199,17 @@ class Tile {
 				break;
 		}
 		return output;
+	}
+
+	// Returns true if aFunction returns true for all tiles
+	function All(pattern : Vector3[], aFunction : Function) : boolean {
+		for (vector in pattern) {
+			var tile = tilePlane.TileAt(Position() + vector);
+			if (tile == null || !aFunction(tile)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
