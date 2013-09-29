@@ -122,7 +122,7 @@ function Add(start : Vector3, end : Vector3) {
 
 	var rectangle = Rectangle(start, end);
 
-	// Fill in the inside
+	// Fill in the inside with "inside space"
 	rectangle.ProcessInside(function(x : int, z : int) {
 			TileAt(x, z).SetInside();
 			});
@@ -143,5 +143,10 @@ function Add(start : Vector3, end : Vector3) {
 			if (tile != null) {
 			tile.MergeInside();
 			}
+			});
+
+	// Draw the wall if needed
+	rectangle.ProcessEdge(function(x : int, z : int) {
+			TileAt(x, z).Draw();
 			});
 }

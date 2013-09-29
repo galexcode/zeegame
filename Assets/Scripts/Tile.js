@@ -85,23 +85,8 @@ class Tile {
 		if (!IsInside()) {
 			if (content != null) {
 				tilePlane.Destroy(content.gameObject);
+				content = null;
 			}
-			content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-			content.position = Vector3(x+0.5, 0, z+0.5);
-			content.renderer.material.SetColor("_Color", Color.blue);
-			/*
-			if (IsWall()) {
-				for (var i=0; i<4; i++) {
-					var tile1 = tilePlane.TileAt(Vector3(x, 0, z) + around[i]);
-					var tile2 = tilePlane.TileAt(Vector3(x, 0, z) + around[(i+1)%4]);
-
-					if (tile1 != null && tile2 != null && tile1.IsWall() && tile2.IsWall()) {
-						//tilePlane.Destroy(content.gameObject);
-						//content = tilePlane.Instantiate(GameObject.Find("BottomRight").transform);
-					}
-				}
-			}
-			*/
 			state = 'wall';
 		}
 	}
@@ -110,6 +95,27 @@ class Tile {
 		if (NumAdjacent('empty', surroundingVectors) == 0) {
 			SetInside();
 		}
+	}
+
+	function Draw() {
+		if (state == 'wall') {
+			content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+			content.position = Vector3(x+0.5, 0, z+0.5);
+			content.renderer.material.SetColor("_Color", Color.blue);
+		}
+		/*
+		if (IsWall()) {
+			for (var i=0; i<4; i++) {
+				var tile1 = tilePlane.TileAt(Vector3(x, 0, z) + around[i]);
+				var tile2 = tilePlane.TileAt(Vector3(x, 0, z) + around[(i+1)%4]);
+
+				if (tile1 != null && tile2 != null && tile1.IsWall() && tile2.IsWall()) {
+					//tilePlane.Destroy(content.gameObject);
+					//content = tilePlane.Instantiate(GameObject.Find("BottomRight").transform);
+				}
+			}
+		}
+		*/
 	}
 
 	function Add(content : Transform) {

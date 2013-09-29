@@ -45,7 +45,7 @@ function Update () {
 					Destroy(cursor);
 				}
 			}
-		} else if (tilePlane.IsEmpty(hit.point)) {
+		} else  { //if (tilePlane.IsEmpty(hit.point)) {
 			var currentTileCoordinate = tilePlane.Coordinates(hit.point);
 
 			selectionCube.position = currentTileCoordinate;
