@@ -25,9 +25,7 @@ function Update() {
 
 	if (Input.GetMouseButtonUp(0)) {
 		tileGrid.Add(start, end);
-		//Debug.Log("Added a tileGrid at " + start + ", " + end);
-		Debug.Log(tileGrid.TextState());
-		//duringPlacement = false;
+		Debug.Log(tileGrid.ToString());
 		DestroyAll();
 	}
 
@@ -37,35 +35,13 @@ function Update() {
 		if (Physics.Raycast(ray, hit)) {
 			var hitObject : GameObject = hit.collider.gameObject;
 
-			//if (tileGrid.IsEmpty(hit.point)) {
-				var newCoordinates = tileGrid.Coordinates(hit.point);
-				if (this.mouseCoordinates != newCoordinates) {
-					Resize(newCoordinates);
-					this.mouseCoordinates = newCoordinates;
-				}
-			//}
-		}
-	}
-}
-
-/*
-function CanCreate() {
-	for (var transform : Transform in pieces) {
-		if (!tileGrid.IsEmpty(transform.position)) {
-			var occupant = tileGrid.TileAt(transform.position).content.parent.gameObject;
-			if (occupant.tag != 'Building') {
-				// Don't place a building on top of a non-building object
-				Debug.Log("Can't create at " + transform.position + " because " + occupant.tag + " is there");
-				return false;
+			var newCoordinates = tileGrid.Coordinates(hit.point);
+			if (this.mouseCoordinates != newCoordinates) {
+				Resize(newCoordinates);
+				this.mouseCoordinates = newCoordinates;
 			}
 		}
 	}
-	return true;
-}
-*/
-
-function Merge(other : GameObject) {
-	// TODO
 }
 
 function DestroyWalls() {
@@ -84,7 +60,6 @@ function DestroyAll() {
 }
 
 function Resize(point : Vector3) {
-	//Debug.Log("Resize called, pieces count = " + pieces.Count);
 	DestroyWalls();
 
 	if (origin == point) {

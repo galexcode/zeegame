@@ -12,7 +12,6 @@ private var moving : boolean = false;
 
 function Start() {
     tileGrid = GetComponent(TileGrid);
-    //selectionCube.FindChild("model").collider.enabled = false;
 }
 
 function Update () {
@@ -22,11 +21,7 @@ function Update () {
     }
 
 	if (cursor != null && Input.GetMouseButtonDown(1)) {
-		for (var child : Transform in cursor) {
-			if (child.gameObject.name == "Model") {
-				child.Rotate(Vector3.up, 90.0);
-			}
-		}
+		cursor.transform.Find("Model").Rotate(Vector3.up, 90.0);
 	}
 
 	var hit: RaycastHit;

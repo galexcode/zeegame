@@ -8,16 +8,6 @@ class Tile {
 	var state : String = 'empty';
 	var content : Transform;
 
-	// Not needed?
-	/*
-	private var adjacentVectors : Vector3[] = [
-		Vector3(-1, 0, 0),
-		Vector3(0, 0, 1),
-		Vector3(1, 0, 0),
-		Vector3(0, 0, -1)
-	];
-	*/
-
 	private var surroundingVectors : Vector3[] = [
 		Vector3(-1, 0, 0),
 		Vector3(-1, 0, 1),
@@ -102,16 +92,12 @@ class Tile {
 	function IsWall() {
 		return state == 'wall';
 	}
-
-	function Position() {
-		return Vector3(x, 0, z);
-	}
 	
 	function NumAdjacent(state : String, adjacencyMatrix : Vector3[]) : int {
 		var adjacent = 0;
 
 		for (var i=0; i<adjacencyMatrix.length; i++) {
-			var tile = tileGrid.TileAt(Position() + adjacencyMatrix[i]);
+			var tile = tileGrid.TileAt(Coordinates() + adjacencyMatrix[i]);
 
 			if (tile != null) {
 				if (tile.state == state) {
@@ -186,14 +172,32 @@ class Tile {
 	}
 
 	function Create(content : Transform) {
-		this.Add(tileGrid.Instantiate(content, Coordinates(), content.transform.rotation));
+		this.Add(tileGrid.Instantiate(content, Position(), content.transform.rotation));
 	}
 
+	// Position in real space
+	function Position() {
+		return Coordinates() * tileGrid.TileSize();
+	}
+
+	// Position in the grid
 	function Coordinates() {
 		return Vector3(x, 0, z);
 	}
 
-	function Text() {
+	// Returns true if aFunction returns true for all tiles
+	function All(pattern : Vector3[], aFunction : Function) : boolean {
+		for (vector in pattern) {
+			var tile = tileGrid.TileAt(Coordinates() + vector);
+			if (tile == null || !aFunction(tile)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function ToString() {
 		var output = '?';
 		switch (state) {
 			case 'empty':
@@ -207,17 +211,5 @@ class Tile {
 				break;
 		}
 		return output;
-	}
-
-	// Returns true if aFunction returns true for all tiles
-	function All(pattern : Vector3[], aFunction : Function) : boolean {
-		for (vector in pattern) {
-			var tile = tileGrid.TileAt(Position() + vector);
-			if (tile == null || !aFunction(tile)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 }

@@ -1,10 +1,5 @@
 ﻿#pragma strict
 
-@script ExecuteInEditMode;
-@script RequireComponent(MeshFilter);
-@script RequireComponent(MeshRenderer);
-@script RequireComponent(MeshCollider);
-
 // Wall pieces
 var bottomLeft : Transform;
 var bottomRight : Transform;
@@ -34,6 +29,11 @@ function Start() {
 	}
 }
 
+
+function TileSize() {
+	return tileMesh.tileSize;
+}
+
 function TileAt(x : int, z : int) {
 	return TileAt(Vector3(x, 0, z));
 }
@@ -41,15 +41,10 @@ function TileAt(x : int, z : int) {
 function TileAt(point : Vector3) : Tile {
 	var offset : int = tileMesh.offset(point.x, point.z);
 	if (offset >= tiles.length || offset < 0) {
-		//Debug.Log("Could not find tile at point (" + point.x + ", " + point.z + ")");
 		return null;
 	}
 
 	return tiles[offset];
-}
-
-function IsEmpty(point : Vector3) : boolean {
-	return TileAt(point).IsEmpty();
 }
 
 function Coordinates(point : Vector3) : Vector3 {
@@ -63,18 +58,6 @@ function Coordinates(point : Vector3) : Vector3 {
 
 function Add(origin : Vector3, contents : Transform) {
 	Instantiate(contents, origin, contents.transform.rotation);
-}
-
-function TextState() {
-    var output : String = '';
-
-	for (var z=tileMesh.sizeZ-1; z>=0; z--) {
-		for (var x=0; x<tileMesh.sizeX; x++) {
-			output += TileAt(x, z).Text();
-		}
-		output += "\n";
-	}
-	return output;
 }
 
 function Add(start : Vector3, end : Vector3) {
@@ -117,4 +100,16 @@ function Add(start : Vector3, end : Vector3) {
 				tile.Draw();
 			}
 			});
+}
+
+function ToString() {
+	var output : String = '';
+
+	for (var z=tileMesh.sizeZ-1; z>=0; z--) {
+		for (var x=0; x<tileMesh.sizeX; x++) {
+			output += TileAt(x, z).ToString();
+		}
+		output += "\n";
+	}
+	return output;
 }
