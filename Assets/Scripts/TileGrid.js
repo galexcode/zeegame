@@ -1,6 +1,7 @@
 ﻿#pragma strict
 
 // Wall pieces
+var intersection : Transform;
 var bottomLeft : Transform;
 var bottomRight : Transform;
 var topRight : Transform;

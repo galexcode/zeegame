@@ -134,9 +134,7 @@ class Tile {
 			var newTransform : Transform;
 			var isWall = function(tile : Tile) { tile.IsWall(); };
 			if (All(intersectionPattern, isWall)) {
-				content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-				content.position = Vector3(x+0.5, 0, z+0.5);
-				content.renderer.material.SetColor("_Color", Color.yellow);
+				newTransform = tileGrid.intersection;
 			} else if (All(horizontalPattern, isWall)) {
 				newTransform = tileGrid.horizontal;
 			} else if (All(verticalPattern, isWall)) {
