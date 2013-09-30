@@ -48,7 +48,7 @@ function DestroyWalls() {
 	// Destroy cloned wall pieces from previous resize
 	for (var transform : Transform in pieces) {
 		if (transform != null) {
-			UnityEngine.Object.Destroy(transform.gameObject);
+			Destroy(transform.gameObject);
 		}
 	}
 	pieces = new List.<Transform>();

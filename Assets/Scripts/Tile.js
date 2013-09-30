@@ -6,9 +6,14 @@ class Tile {
 	var tileGrid : TileGrid;
 
 	enum State { EMPTY, WALL, INSIDE, FULL };
-	var state : State = State.EMPTY;
-	var content : Transform;
 
+	var state : State = State.EMPTY;
+	var oldState : State = State.EMPTY;
+
+	var content : Transform;
+	var oldContent : Transform;
+
+	// make static?
 	private var surroundingVectors : Vector3[] = [
 		Vector3(-1, 0, 0),
 		Vector3(-1, 0, 1),
@@ -78,18 +83,27 @@ class Tile {
 		return state == State.INSIDE;
 	}
 
-	function SetInside() {
-		if (content != null) {
-			tileGrid.Destroy(content.gameObject);
-			content = null;
-		}
-		state = State.INSIDE;
-	}
-
 	function IsWall() {
 		return state == State.WALL;
 	}
 	
+	function SetInside() {
+		SetState(State.INSIDE);
+	}
+
+	function SetWall() {
+		// Don't create a wall inside of an existing building.
+		if (!IsInside()) {
+			SetState(State.WALL);
+		}
+	}
+
+	function SetState(state : State) {
+		oldState = this.state;
+		this.state = state;
+		DestroyContent();
+	}
+
 	function NumAdjacent(state : State, adjacencyMatrix : Vector3[]) : int {
 		var adjacent = 0;
 
@@ -111,13 +125,6 @@ class Tile {
 		return adjacent;
 	}
 
-	function SetWall() {
-		// Don't create a wall inside of an existing building.
-		if (!IsInside()) {
-			state = State.WALL;
-		}
-	}
-
 	function MergeInside() {
 		if (NumAdjacent(State.EMPTY, surroundingVectors) == 0) {
 			SetInside();
@@ -125,11 +132,8 @@ class Tile {
 	}
 
 	function Draw() {
-		if (state == State.WALL) {
-			if (content != null) {
-				tileGrid.Destroy(content.gameObject);
-				content = null;
-			}
+		if (IsWall()) {
+			DestroyContent();
 
 			var newTransform : Transform;
 			var isWall = function(tile : Tile) { tile.IsWall(); };
@@ -190,6 +194,20 @@ class Tile {
 		}
 
 		return true;
+	}
+
+	function DestroyContent() {
+		oldContent = content;
+
+		if (content != null) {
+			tileGrid.Destroy(content.gameObject);
+			content = null;
+		}
+	}
+
+	function Undo() {
+		state = oldState;
+		content = oldContent;
 	}
 
 	function ToString() {
