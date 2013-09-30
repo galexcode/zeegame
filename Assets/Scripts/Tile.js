@@ -5,7 +5,8 @@ class Tile {
 	var z : int;
 	var tileGrid : TileGrid;
 
-	var state : String = 'empty';
+	enum State { EMPTY, WALL, INSIDE, FULL };
+	var state : State = State.EMPTY;
 	var content : Transform;
 
 	private var surroundingVectors : Vector3[] = [
@@ -70,15 +71,11 @@ class Tile {
 	}
 
 	function IsEmpty() {
-		return state == 'empty';
-	}
-
-	function IsFull() {
-		return state == 'full';
+		return state == State.EMPTY;
 	}
 
 	function IsInside() {
-		return state == 'inside';
+		return state == State.INSIDE;
 	}
 
 	function SetInside() {
@@ -86,14 +83,14 @@ class Tile {
 			tileGrid.Destroy(content.gameObject);
 			content = null;
 		}
-		state = 'inside';
+		state = State.INSIDE;
 	}
 
 	function IsWall() {
-		return state == 'wall';
+		return state == State.WALL;
 	}
 	
-	function NumAdjacent(state : String, adjacencyMatrix : Vector3[]) : int {
+	function NumAdjacent(state : State, adjacencyMatrix : Vector3[]) : int {
 		var adjacent = 0;
 
 		for (var i=0; i<adjacencyMatrix.length; i++) {
@@ -105,7 +102,7 @@ class Tile {
 				}
 			} else {
 				// Consider things outside the tile plane as "empty"
-				if (state == 'empty') {
+				if (state == State.EMPTY) {
 					adjacent++;
 				}
 			}
@@ -117,18 +114,18 @@ class Tile {
 	function SetWall() {
 		// Don't create a wall inside of an existing building.
 		if (!IsInside()) {
-			state = 'wall';
+			state = State.WALL;
 		}
 	}
 
 	function MergeInside() {
-		if (NumAdjacent('empty', surroundingVectors) == 0) {
+		if (NumAdjacent(State.EMPTY, surroundingVectors) == 0) {
 			SetInside();
 		}
 	}
 
 	function Draw() {
-		if (state == 'wall') {
+		if (state == State.WALL) {
 			if (content != null) {
 				tileGrid.Destroy(content.gameObject);
 				content = null;
@@ -168,7 +165,7 @@ class Tile {
 
 	function Add(content : Transform) {
 		this.content = content;
-		state = 'full';
+		state = State.FULL;
 	}
 
 	function Create(content : Transform) {
@@ -200,14 +197,17 @@ class Tile {
 	function ToString() {
 		var output = '?';
 		switch (state) {
-			case 'empty':
+			case State.EMPTY:
 				output = '_';
 				break;
-			case 'wall':
+			case State.WALL:
 				output = 'W';
 				break;
-			case 'inside':
+			case State.INSIDE:
 				output = 'I';
+				break;
+			case State.FULL:
+				output = 'F';
 				break;
 		}
 		return output;
