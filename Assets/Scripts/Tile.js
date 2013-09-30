@@ -3,7 +3,7 @@
 class Tile {
 	var x : int;
 	var z : int;
-	var tilePlane : TilePlane;
+	var tileGrid : TileGrid;
 
 	var state : String = 'empty';
 	var content : Transform;
@@ -73,10 +73,10 @@ class Tile {
 		Vector3(-1, 0, 0)
 	];
 
-	function Tile(x : int, z : int, tilePlane : TilePlane) {
+	function Tile(x : int, z : int, tileGrid : TileGrid) {
 		this.x = x;
 		this.z = z;
-		this.tilePlane = tilePlane;
+		this.tileGrid = tileGrid;
 	}
 
 	function IsEmpty() {
@@ -93,7 +93,7 @@ class Tile {
 
 	function SetInside() {
 		if (content != null) {
-			tilePlane.Destroy(content.gameObject);
+			tileGrid.Destroy(content.gameObject);
 			content = null;
 		}
 		state = 'inside';
@@ -111,7 +111,7 @@ class Tile {
 		var adjacent = 0;
 
 		for (var i=0; i<adjacencyMatrix.length; i++) {
-			var tile = tilePlane.TileAt(Position() + adjacencyMatrix[i]);
+			var tile = tileGrid.TileAt(Position() + adjacencyMatrix[i]);
 
 			if (tile != null) {
 				if (tile.state == state) {
@@ -144,7 +144,7 @@ class Tile {
 	function Draw() {
 		if (state == 'wall') {
 			if (content != null) {
-				tilePlane.Destroy(content.gameObject);
+				tileGrid.Destroy(content.gameObject);
 				content = null;
 			}
 
@@ -155,17 +155,17 @@ class Tile {
 				content.position = Vector3(x+0.5, 0, z+0.5);
 				content.renderer.material.SetColor("_Color", Color.yellow);
 			} else if (All(horizontalPattern, isWall)) {
-				newTransform = tilePlane.horizontal;
+				newTransform = tileGrid.horizontal;
 			} else if (All(verticalPattern, isWall)) {
-				newTransform = tilePlane.vertical;
+				newTransform = tileGrid.vertical;
 			} else if (All(bottomLeftPattern, isWall)) {
-				newTransform = tilePlane.bottomLeft;
+				newTransform = tileGrid.bottomLeft;
 			} else if (All(topLeftPattern, isWall)) {
-				newTransform = tilePlane.topLeft;
+				newTransform = tileGrid.topLeft;
 			} else if (All(topRightPattern, isWall)) {
-				newTransform = tilePlane.topRight;
+				newTransform = tileGrid.topRight;
 			} else if (All(bottomRightPattern, isWall)) {
-				newTransform = tilePlane.bottomRight;
+				newTransform = tileGrid.bottomRight;
 			} else {
 				content = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
 				content.position = Vector3(x+0.5, 0, z+0.5);
@@ -173,8 +173,8 @@ class Tile {
 			}
 
 			if (newTransform != null) {
-				content = tilePlane.Instantiate(newTransform, Position(), newTransform.rotation);
-				content.parent = tilePlane.transform;
+				content = tileGrid.Instantiate(newTransform, Position(), newTransform.rotation);
+				content.parent = tileGrid.transform;
 				content.Find("Model").renderer.enabled = true;
 			}
 		}
@@ -186,7 +186,7 @@ class Tile {
 	}
 
 	function Create(content : Transform) {
-		this.Add(tilePlane.Instantiate(content, Coordinates(), content.transform.rotation));
+		this.Add(tileGrid.Instantiate(content, Coordinates(), content.transform.rotation));
 	}
 
 	function Coordinates() {
@@ -212,7 +212,7 @@ class Tile {
 	// Returns true if aFunction returns true for all tiles
 	function All(pattern : Vector3[], aFunction : Function) : boolean {
 		for (vector in pattern) {
-			var tile = tilePlane.TileAt(Position() + vector);
+			var tile = tileGrid.TileAt(Position() + vector);
 			if (tile == null || !aFunction(tile)) {
 				return false;
 			}

@@ -5,13 +5,13 @@
 var selectionCube : Transform;
 var cursor : GameObject;
 
-private var tilePlane : TilePlane;
+private var tileGrid : TileGrid;
 private var highlightedObject : GameObject;
 private var movingObject : GameObject;
 private var moving : boolean = false;
 
 function Start() {
-    tilePlane = GetComponent(TilePlane);
+    tileGrid = GetComponent(TileGrid);
     //selectionCube.FindChild("model").collider.enabled = false;
 }
 
@@ -40,13 +40,13 @@ function Update () {
 					Debug.Log("grabbing object" + hitObject);
 					Grab(hitObject);
 				} else if (cursor != null) {
-					var object = Instantiate(cursor, tilePlane.TileAt(hit.point).Coordinates(), cursor.transform.rotation);
+					var object = Instantiate(cursor, tileGrid.TileAt(hit.point).Coordinates(), cursor.transform.rotation);
 					object.GetComponent(BuildingPlacer).StartPlacement();
 					Destroy(cursor);
 				}
 			}
-		} else  { //if (tilePlane.IsEmpty(hit.point)) {
-			var currentTileCoordinate = tilePlane.Coordinates(hit.point);
+		} else  { //if (tileGrid.IsEmpty(hit.point)) {
+			var currentTileCoordinate = tileGrid.Coordinates(hit.point);
 
 			selectionCube.position = currentTileCoordinate;
 			if (cursor != null) {
