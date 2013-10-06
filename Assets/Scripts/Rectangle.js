@@ -10,11 +10,7 @@ class Rectangle {
 	}
 
 	function ProcessAll(aFunction : Function) {
-		for (var x=start.x; x<=end.x; x++) {
-			for (var z=start.z; z<=end.z; z++) {
-				aFunction(x, z);
-			}
-		}
+		ProcessAll(aFunction, start, end);
 	}
 
 	function ProcessInside(aFunction : Function) {
@@ -25,7 +21,21 @@ class Rectangle {
 		}
 	}
 
+	function ProcessAll(aFunction : Function, borderSize : int) {
+		ProcessAll(aFunction, start-Vector3.one*borderSize, end+Vector3.one*borderSize);
+	}
+
 	function ProcessEdge(aFunction : Function) {
+		ProcessRectangle(aFunction, this.start, this.end);
+	}
+
+	function ProcessEdge(aFunction : Function, borderSize : int) {
+		for (var i : int = 0; i < borderSize; i++) {
+			ProcessRectangle(aFunction, this.start-Vector3.one*i, this.end+Vector3.one*i);
+		}
+	}
+
+	private function ProcessRectangle(aFunction : Function, start : Vector3, end : Vector3) {
 		/*
 		   Add horizontal lines:
 		   -------
@@ -48,6 +58,14 @@ class Rectangle {
 		for (var z=start.z+1; z<end.z; z++) {
 			aFunction(start.x, z);
 			aFunction(end.x, z);
+		}
+	}
+
+	private function ProcessAll(aFunction : Function, start : Vector3, end : Vector3) {
+		for (var x=start.x; x<=end.x; x++) {
+			for (var z=start.z; z<=end.z; z++) {
+				aFunction(x, z);
+			}
 		}
 	}
 

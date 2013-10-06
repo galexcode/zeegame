@@ -81,20 +81,20 @@ function Add(start : Vector3, end : Vector3) {
 	});
 
 	// If this wall extends into another wall, try to turn it into inside space
-	Rectangle(start - Vector3.one, end + Vector3.one).ProcessAll(function(x : int, z : int) {
+	rectangle.ProcessEdge(function(x : int, z : int) {
 		var tile : Tile = TileAt(x, z);
 		if (tile != null) {
 			TileAt(x, z).MergeInside();
 		}
-	});
+	}, 2);
 
 	// Draw the wall if needed
-	Rectangle(start - Vector3.one, end + Vector3.one).ProcessAll(function(x : int, z : int) {
+	rectangle.ProcessAll(function(x : int, z : int) {
 		var tile : Tile = TileAt(x, z);
 		if (tile != null) {
 			TileAt(x, z).Draw();
 		}
-	});
+	}, 1);
 }
 
 function ToString() {
