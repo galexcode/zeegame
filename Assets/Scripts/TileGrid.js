@@ -40,6 +40,10 @@ function TileAt(x : int, z : int) {
 }
 
 function TileAt(point : Vector3) : Tile {
+	if (!tileMesh.withinBounds(point)) {
+		return null;
+	}
+
 	var offset : int = tileMesh.offset(point.x, point.z);
 	if (offset >= tiles.length || offset < 0) {
 		return null;
@@ -62,55 +66,80 @@ function Add(origin : Vector3, contents : Transform) {
 }
 
 function Add(start : Vector3, end : Vector3) {
-	//Debug.Log("start = " + start + ", end = " + end);
-
 	var rectangle = Rectangle(start, end);
+
+	Debug.Log(ToString());
 
 	// Fill in the inside with "inside space"
 	rectangle.ProcessInside(function(x : int, z : int) {
-			TileAt(x, z).SetInside();
-			});
+		TileAt(x, z).SetInside();
+	});
 
 	// Fill in the walls on the outside
 	rectangle.ProcessEdge(function(x : int, z : int) {
-			TileAt(x, z).SetWall();
-			});
+		TileAt(x, z).SetWall();
+	});
 
 	// If this wall extends into another wall, try to turn it into inside space
-	rectangle.ProcessEdge(function(x : int, z : int) {
+	Rectangle(start - Vector3.one, end + Vector3.one).ProcessAll(function(x : int, z : int) {
+		var tile : Tile = TileAt(x, z);
+		if (tile != null) {
 			TileAt(x, z).MergeInside();
-			});
-
-	// If this wall butts up against another wall, try to turn the two walls into inside space
-	Rectangle(start - Vector3.one, end + Vector3.one).ProcessEdge(function(x : int, z : int) {
-			var tile : Tile = TileAt(x, z);
-			if (tile != null) {
-				tile.MergeInside();
-			}
-			});
+		}
+	});
 
 	// Draw the wall if needed
-	rectangle.ProcessEdge(function(x : int, z : int) {
+	Rectangle(start - Vector3.one, end + Vector3.one).ProcessAll(function(x : int, z : int) {
+		var tile : Tile = TileAt(x, z);
+		if (tile != null) {
 			TileAt(x, z).Draw();
-			});
-
-	// Adjust adjacent walls if needed
-	Rectangle(start - Vector3.one, end + Vector3.one).ProcessEdge(function(x : int, z : int) {
-			var tile : Tile = TileAt(x, z);
-			if (tile != null) {
-				tile.Draw();
-			}
-			});
+		}
+	});
 }
 
 function ToString() {
+	var x : int;
 	var output : String = '';
 
+	output += "X: ";
+	for (x=0; x<tileMesh.sizeX; x++) {
+		output += x;
+	}
+
 	for (var z=tileMesh.sizeZ-1; z>=0; z--) {
-		for (var x=0; x<tileMesh.sizeX; x++) {
+		output += "\nZ:" + z + " ";
+		for (x=0; x<tileMesh.sizeX; x++) {
 			output += TileAt(x, z).ToString();
 		}
-		output += "\n";
+		//output += "\n";
 	}
 	return output;
+}
+
+function Begin() {
+	//Debug.Log("Begin()");
+	for (var tile : Tile in tiles) {
+		tile.Begin();
+	}
+}
+
+function Revert() {
+	//Debug.Log("Revert()");
+	for (var tile : Tile in tiles) {
+		tile.Revert();
+	}
+}
+
+function Commit() {
+	//Debug.Log("Commit()");
+	for (var tile : Tile in tiles) {
+		tile.Commit();
+	}
+}
+
+function Draw() {
+	//Debug.Log("Draw()");
+	for (var tile : Tile in tiles) {
+		tile.Draw();
+	}
 }

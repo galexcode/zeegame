@@ -6,6 +6,7 @@ var start : Vector3;
 var end : Vector3;
 
 private var tileGrid : TileGrid;
+private var tileMesh : TileMesh;
 private var origin : Vector3;
 private var mouseCoordinates : Vector3;
 private var duringPlacement : boolean;
@@ -13,7 +14,9 @@ private var duringPlacement : boolean;
 function Awake() {
 	duringPlacement = false;
 	tileGrid = GameObject.FindWithTag("TilePlane").GetComponent(TileGrid);
-	origin = transform.position;
+	tileMesh = GameObject.FindWithTag("TilePlane").GetComponent(TileMesh);
+	origin = tileGrid.Coordinates(transform.position);
+	tileGrid.Begin();
 }
 
 function Update() {
@@ -23,13 +26,15 @@ function Update() {
 		return;
 	}
 
-	if (Input.GetMouseButtonUp(0)) {
-		tileGrid.Add(start, end);
+	// Back out any changes if the user presses escape.
+	if (Input.GetKeyDown('escape')) {
+		tileGrid.Revert();
+		DestroyAll();
+	} else if (Input.GetMouseButtonUp(0)) {
+		tileGrid.Commit();
 		Debug.Log(tileGrid.ToString());
 		DestroyAll();
-	}
-
-	if (Input.GetMouseButton(0)) {
+	} else if (Input.GetMouseButton(0)) {
 		var hit: RaycastHit;
 		var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		if (Physics.Raycast(ray, hit)) {
@@ -37,6 +42,8 @@ function Update() {
 
 			var newCoordinates = tileGrid.Coordinates(hit.point);
 			if (this.mouseCoordinates != newCoordinates) {
+				tileGrid.Revert();
+				tileGrid.Begin();
 				Resize(newCoordinates);
 				this.mouseCoordinates = newCoordinates;
 			}
@@ -60,46 +67,32 @@ function DestroyAll() {
 }
 
 function Resize(point : Vector3) {
-	DestroyWalls();
-
-	if (origin == point) {
-		point += Vector3.one;
-	}
-
 	start = Vector3.Min(origin, point);
 	end = Vector3.Max(origin, point);
 
 	var distance = end - start;
 
-	if (distance.x < 1) {
-		end.x += 1;
+	// Minimum of 2x2 building
+	if (distance.x <= 1) {
+		end.x += 2 - distance.x;
 	}
 
-	if (distance.z < 1) {
-		end.z += 1;
+	if (distance.z <= 1) {
+		end.z += 2 - distance.z;
 	}
 
-	pieces.Add(Instantiate(tileGrid.bottomLeft, Vector3(start.x, 0, start.z), tileGrid.bottomLeft.rotation));
-	pieces.Add(Instantiate(tileGrid.bottomRight, Vector3(end.x, 0, start.z), tileGrid.bottomRight.rotation));
-	pieces.Add(Instantiate(tileGrid.topRight, Vector3(end.x, 0, end.z), tileGrid.topRight.rotation));
-	pieces.Add(Instantiate(tileGrid.topLeft, Vector3(start.x, 0, end.z), tileGrid.topLeft.rotation));
-
-	for (var x=start.x+1; x<end.x; x++) {
-		pieces.Add(Instantiate(tileGrid.horizontal, Vector3(x, 0, end.z), tileGrid.horizontal.rotation));
-		pieces.Add(Instantiate(tileGrid.horizontal, Vector3(x, 0, start.z), tileGrid.horizontal.rotation));
+	// Don't put a wall beyond the tile mesh
+	if (end.x >= tileMesh.sizeX) {
+		end.x = tileMesh.sizeX - 1;
+		start.x = start.x - 1;
 	}
 
-	for (var z=start.z+1; z<end.z; z++) {
-		pieces.Add(Instantiate(tileGrid.vertical, Vector3(start.x, 0, z), tileGrid.vertical.rotation));
-		pieces.Add(Instantiate(tileGrid.vertical, Vector3(end.x, 0, z), tileGrid.vertical.rotation));
+	if (end.z >= tileMesh.sizeZ) {
+		end.z = tileMesh.sizeZ - 1;
+		start.z = start.z - 1;
 	}
 
-	for (var transform : Transform in pieces) {
-		if (transform != null) {
-			transform.parent = tileGrid.transform;
-			transform.Find("Model").renderer.enabled = true;
-		}
-	}
+	tileGrid.Add(start, end);
 }
 
 function StartPlacement() {

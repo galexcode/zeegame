@@ -70,3 +70,6 @@ function offset(x : int, z : int) {
 	return z * (sizeX+1) + x;
 }
 
+function withinBounds(point : Vector3) {
+	return (point.x < sizeX && point.z < sizeZ);
+}

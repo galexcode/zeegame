@@ -9,6 +9,14 @@ class Rectangle {
 		this.end = end;
 	}
 
+	function ProcessAll(aFunction : Function) {
+		for (var x=start.x; x<=end.x; x++) {
+			for (var z=start.z; z<=end.z; z++) {
+				aFunction(x, z);
+			}
+		}
+	}
+
 	function ProcessInside(aFunction : Function) {
 		for (var x=start.x+1; x<end.x; x++) {
 			for (var z=start.z+1; z<end.z; z++) {

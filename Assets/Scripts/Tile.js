@@ -5,13 +5,15 @@ class Tile {
 	var z : int;
 	var tileGrid : TileGrid;
 
-	enum State { EMPTY, WALL, INSIDE, FULL };
+	enum State { UNDEFINED, EMPTY, WALL, INSIDE, FULL };
 
 	var state : State = State.EMPTY;
-	var oldState : State = State.EMPTY;
+	var oldState : State;
 
 	var content : Transform;
 	var oldContent : Transform;
+
+	private var inTransaction : boolean = false;
 
 	// make static?
 	private var surroundingVectors : Vector3[] = [
@@ -99,9 +101,20 @@ class Tile {
 	}
 
 	function SetState(state : State) {
-		oldState = this.state;
+		if (this.state == State.UNDEFINED) {
+			Debug.Log("State = undefined for point " + Coordinates());
+		}
 		this.state = state;
+
+		// When state changes, destroy any content currently in this tile.
 		DestroyContent();
+	}
+
+	function DestroyContent() {
+		if (content != null) {
+			content.gameObject.SetActive(false);
+		}
+		content = null;
 	}
 
 	function NumAdjacent(state : State, adjacencyMatrix : Vector3[]) : int {
@@ -133,8 +146,6 @@ class Tile {
 
 	function Draw() {
 		if (IsWall()) {
-			DestroyContent();
-
 			var newTransform : Transform;
 			var isWall = function(tile : Tile) { tile.IsWall(); };
 			if (All(intersectionPattern, isWall)) {
@@ -158,20 +169,14 @@ class Tile {
 			}
 
 			if (newTransform != null) {
-				content = tileGrid.Instantiate(newTransform, Position(), newTransform.rotation);
-				content.parent = tileGrid.transform;
-				content.Find("Model").renderer.enabled = true;
+				CreateContent(newTransform);
 			}
-		}
+		} 
 	}
 
 	function Add(content : Transform) {
 		this.content = content;
 		state = State.FULL;
-	}
-
-	function Create(content : Transform) {
-		this.Add(tileGrid.Instantiate(content, Position(), content.transform.rotation));
 	}
 
 	// Position in real space
@@ -196,18 +201,54 @@ class Tile {
 		return true;
 	}
 
-	function DestroyContent() {
-		oldContent = content;
-
-		if (content != null) {
-			tileGrid.Destroy(content.gameObject);
-			content = null;
+	function CreateContent(content : Transform) {
+		this.content = tileGrid.Instantiate(content, Position(), content.rotation);
+		this.content.parent = tileGrid.transform;
+		this.content.Find("Model").renderer.enabled = true;
+		if (oldContent != null) {
+			oldContent.gameObject.SetActive(false);
 		}
 	}
 
-	function Undo() {
-		state = oldState;
-		content = oldContent;
+	function Begin() {
+		oldContent = content;
+		oldState = state;
+		inTransaction = true;
+	}
+
+	function Commit() {
+		if (inTransaction) {
+			if (oldContent != null && oldContent != content) {
+				tileGrid.Destroy(oldContent.gameObject);
+			}
+
+			oldContent = null;
+			oldState = State.UNDEFINED;
+		} else {
+			Debug.Log("Commit() called, but Begin() was not called, aborting");
+		}
+	}
+
+	function Revert() {
+		if (inTransaction) {
+			if (content != null && oldContent != content) {
+				tileGrid.Destroy(content.gameObject);
+			}
+
+			if (oldContent != null) {
+				oldContent.gameObject.SetActive(true);
+			}
+
+			state = oldState;
+			content = oldContent;
+
+			oldState = State.UNDEFINED;
+			oldContent = null;
+
+			inTransaction = false;
+		} else {
+			Debug.Log("Commit() called, but Begin() was not called, aborting");
+		}
 	}
 
 	function ToString() {
@@ -224,6 +265,9 @@ class Tile {
 				break;
 			case State.FULL:
 				output = 'F';
+				break;
+			case State.UNDEFINED:
+				output = '?';
 				break;
 		}
 		return output;
